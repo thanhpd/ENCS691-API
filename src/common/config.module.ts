@@ -7,7 +7,7 @@ const validationSchema = Joi.object({
   NODE_ENV: Joi.string()
     .valid('development', 'production', 'test', 'provision')
     .default('development'),
-  PORT: Joi.number().port().default(3000),
+  PORT: Joi.number().port().default(8080),
 });
 
 const NODE_ENV = process.env.NODE_ENV;
