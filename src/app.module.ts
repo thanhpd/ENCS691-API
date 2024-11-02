@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 // import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ConfigModule } from 'src/common/config.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ConfigModule } from 'src/common/config.module';
     //   synchronize: true,
     // }),
     EventEmitterModule.forRoot(),
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
