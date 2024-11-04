@@ -5,6 +5,9 @@ import { AppService } from './app.service';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ConfigModule } from 'src/common/config.module';
 import { HealthModule } from './health/health.module';
+import { UsersService } from './users/users.service';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -12,17 +15,22 @@ import { HealthModule } from './health/health.module';
     // TypeOrmModule.forRoot({
     //   type: 'postgres',
     //   host: 'localhost',
-    //   port: 3306,
-    //   username: 'root',
+    //   port: 5432,
+    //   username: 'postgres',
     //   password: 'root',
-    //   database: 'test',
-    //   entities: [],
-    //   synchronize: true,
+    //   database: 'auction',
+    //   entities: [`${__dirname}/../**/*.entity{.ts,.js}`],
+    //   migrations: [`${__dirname}/../migrations/*{.ts,.js}`],
+    //   synchronize: false,
+    //   migrationsRun: true,
+    //   logging: true,
     // }),
     EventEmitterModule.forRoot(),
     HealthModule,
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, UsersService],
 })
 export class AppModule {}
