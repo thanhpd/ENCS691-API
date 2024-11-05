@@ -1,20 +1,42 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { User } from 'src/users/user.entity';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
+  ) {}
 
-  async signIn(email: string, password: string) {
-    const user = await this.usersService.findOne(email);
+  async validateUser(email: string, password: string) {
+    return this.usersService.validateCredentials({ email, password });
+  }
 
-    if (user?.password !== password) {
+  async login(user: User) {
+    if (!user) {
       throw new UnauthorizedException();
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: pw, ...rest } = user;
+    const payload = { sub: user.id, email: user.email };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
+  }
 
-    return rest;
+  async register(userDto: CreateUserDto) {
+    const user = await this.usersService.create(userDto);
+    if (!user) {
+      throw new InternalServerErrorException();
+    }
+
+    delete user.password;
+    return user;
   }
 }

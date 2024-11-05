@@ -23,7 +23,6 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
-      whitelist: true, // TODO: should be set to false or removed: https://en.wikipedia.org/wiki/Principle_of_least_astonishment
       // skipMissingProperties: true, // Remember to add @IsOptional() to an optional field
     }),
     // new TrimBodyPipe(),
