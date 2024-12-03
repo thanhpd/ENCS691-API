@@ -1,5 +1,13 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Relation,
+} from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { Auction } from '../auction/auction.entity';
 
 @Entity({ name: 'user' })
 export class User {
@@ -17,6 +25,15 @@ export class User {
 
   @Column()
   lastName: string;
+
+  @Column()
+  createdAt: Date;
+
+  @Column()
+  updatedAt: Date;
+
+  @OneToMany(() => Auction, (auction) => auction.creator)
+  auctions: Relation<Auction>[];
 
   @BeforeInsert()
   async hashPassword() {

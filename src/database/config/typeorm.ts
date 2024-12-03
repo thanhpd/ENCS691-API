@@ -11,13 +11,16 @@ const config: TypeOrmModuleOptions = {
   port: parseInt(`${process.env.POSTGRESQL_PORT}`),
   username: `${process.env.POSTGRESQL_USERNAME}`,
   password: `${process.env.POSTGRESQL_PASSWORD}`,
-  database: `${process.env.POSTGRESQL_NAME}`,
-  ssl:
-    process.env.BUILD_ENV === 'production'
-      ? process.env.POSTGRESQL_SSL === 'true'
-      : false,
-  entities: ['dist/**/*.entity{.ts,.js}'],
-  migrations: ['dist/database/migrations/*{.ts,.js}'],
+  database: `${process.env.POSTGRESQL_DATABASE}`,
+  ssl: process.env.POSTGRESQL_SSL === 'true',
+  entities: [
+    'dist/**/*.entity{.ts,.js}',
+    // 'src/**/*.entity{.ts,.js}',
+  ],
+  migrations: [
+    'dist/database/migrations/*{.ts,.js}',
+    // 'src/database/migrations/*{.ts,.js}',
+  ],
   synchronize: false,
   migrationsRun: true,
   logging: true,

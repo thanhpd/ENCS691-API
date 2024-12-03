@@ -5,10 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ConfigModule } from 'src/common/config.module';
 import { HealthModule } from './health/health.module';
-import { UsersService } from './users/users.service';
+import { UserService } from './user/user.service';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
+import { UserModule } from './user/user.module';
 import { ConfigService } from '@nestjs/config';
+import { AuctionModule } from './auction/auction.module';
 
 @Module({
   imports: [
@@ -21,9 +22,10 @@ import { ConfigService } from '@nestjs/config';
     EventEmitterModule.forRoot(),
     HealthModule,
     AuthModule,
-    UsersModule,
+    UserModule,
+    AuctionModule,
   ],
   controllers: [AppController],
-  providers: [AppService, UsersService],
+  providers: [AppService, UserService],
 })
 export class AppModule {}

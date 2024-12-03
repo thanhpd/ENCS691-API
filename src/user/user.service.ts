@@ -1,12 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { User } from 'src/users/user.entity';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
@@ -51,7 +51,11 @@ export class UsersService {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
 
-    const user = this.usersRepository.create(userDto);
+    const user = this.usersRepository.create({
+      ...userDto,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
     await this.usersRepository.save(user);
 
     return user;
@@ -63,9 +67,5 @@ export class UsersService {
 
   findOne(id: string): Promise<User | null> {
     return this.usersRepository.findOneBy({ id });
-  }
-
-  async remove(id: string): Promise<void> {
-    await this.usersRepository.delete(id);
   }
 }
