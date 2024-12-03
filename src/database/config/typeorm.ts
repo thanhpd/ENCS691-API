@@ -3,7 +3,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { config as dotenvConfig } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
 
-dotenvConfig({ path: '.env' });
+dotenvConfig({ path: '.env.production.local' });
 
 const config: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -13,7 +13,7 @@ const config: TypeOrmModuleOptions = {
   password: `${process.env.POSTGRESQL_PASSWORD}`,
   database: `${process.env.POSTGRESQL_NAME}`,
   ssl:
-    process.env.NODE_ENV === 'production'
+    process.env.BUILD_ENV === 'production'
       ? process.env.POSTGRESQL_SSL === 'true'
       : false,
   entities: ['dist/**/*.entity{.ts,.js}'],
