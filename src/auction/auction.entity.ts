@@ -1,3 +1,4 @@
+import { AuctionType } from 'src/auction/enums/auction-type.enum';
 import { AuctionLot } from '../auction-lot/auction-lot.entity';
 import { User } from '../user/user.entity';
 import {
@@ -9,6 +10,7 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
+import { AuctionStatus } from 'src/auction/enums/auction-status.enum';
 
 @Entity({ name: 'auction' })
 export class Auction {
@@ -27,14 +29,24 @@ export class Auction {
   @Column()
   details: string;
 
-  @Column({ nullable: false })
-  type: 'live' | 'timed';
+  @Column({
+    nullable: false,
+    type: 'enum',
+    enum: AuctionType,
+    default: AuctionType.TIMED,
+  })
+  type: AuctionType;
 
   @ManyToOne(() => User, (user) => user.auctions)
   @JoinColumn({ name: 'creatorId' })
   creator: Relation<User>;
 
-  @Column({ nullable: false })
+  @Column({
+    nullable: false,
+    type: 'enum',
+    enum: AuctionStatus,
+    default: AuctionStatus.PENDING,
+  })
   status: 'pending' | 'active' | 'ended';
 
   @Column({ nullable: false })
