@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Auction } from '../auction/auction.entity';
+import { Bid } from '../bid/bid.entity';
 
 @Entity({ name: 'user' })
 export class User {
@@ -15,9 +16,12 @@ export class User {
   id: string;
 
   @Column()
+  avatarUrl: string;
+
+  @Column({ nullable: false, unique: true })
   email: string;
 
-  @Column()
+  @Column({ nullable: false })
   password: string;
 
   @Column()
@@ -26,14 +30,17 @@ export class User {
   @Column()
   lastName: string;
 
-  @Column()
+  @Column({ nullable: false })
   createdAt: Date;
 
   @Column()
   updatedAt: Date;
 
   @OneToMany(() => Auction, (auction) => auction.creator)
-  auctions: Relation<Auction>[];
+  auctions: Relation<Auction[]>;
+
+  @OneToMany(() => Bid, (bid) => bid.bidder)
+  bids: Relation<Bid[]>;
 
   @BeforeInsert()
   async hashPassword() {

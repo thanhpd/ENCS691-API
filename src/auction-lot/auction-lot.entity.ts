@@ -1,5 +1,5 @@
-import { AuctionLot } from '../auction-lot/auction-lot.entity';
 import { User } from '../user/user.entity';
+import { Bid } from '../bid/bid.entity';
 import {
   Column,
   Entity,
@@ -9,30 +9,41 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
+import { Auction } from '../auction/auction.entity';
 
-@Entity({ name: 'auction' })
-export class Auction {
+@Entity({ name: 'auctionLot' })
+export class AuctionLot {
   @PrimaryGeneratedColumn('uuid', { name: 'id' })
   id: string;
 
   @Column({ nullable: false })
-  name: string;
+  productName: string;
 
   @Column()
-  thumbnailUrl: string;
-
-  @Column({ nullable: false })
-  startAt: Date;
+  itemOverview: string;
 
   @Column()
-  details: string;
+  paymentShippingDetails: string;
+
+  @Column()
+  terms: string;
+
+  @Column()
+  estPriceLine: string;
 
   @Column({ nullable: false })
-  type: 'live' | 'timed';
+  startingPrice: number;
+
+  @Column()
+  imageUrls: string;
 
   @ManyToOne(() => User, (user) => user.auctions)
   @JoinColumn({ name: 'creatorId' })
   creator: Relation<User>;
+
+  @ManyToOne(() => Auction, (auction) => auction.auctionLots)
+  @JoinColumn({ name: 'auctionId' })
+  auction: Relation<Auction>;
 
   @Column({ nullable: false })
   status: 'pending' | 'active' | 'ended';
@@ -43,6 +54,6 @@ export class Auction {
   @Column()
   updatedAt: Date;
 
-  @OneToMany(() => AuctionLot, (auctionLot) => auctionLot.auction)
-  auctionLots: Relation<AuctionLot[]>;
+  @OneToMany(() => Bid, (bid) => bid.auctionLot)
+  bids: Relation<Bid[]>;
 }

@@ -14,12 +14,12 @@ const config: TypeOrmModuleOptions = {
   database: `${process.env.POSTGRESQL_DATABASE}`,
   ssl: process.env.POSTGRESQL_SSL === 'true',
   entities: [
-    'dist/**/*.entity{.ts,.js}',
-    // 'src/**/*.entity{.ts,.js}',
+    // 'dist/**/*.entity{.ts,.js}',
+    'src/**/*.entity{.ts,.js}',
   ],
   migrations: [
-    'dist/database/migrations/*{.ts,.js}',
-    // 'src/database/migrations/*{.ts,.js}',
+    // 'dist/database/migrations/*{.ts,.js}',
+    'src/database/migrations/*{.ts,.js}',
   ],
   synchronize: false,
   migrationsRun: true,
