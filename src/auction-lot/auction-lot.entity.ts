@@ -16,25 +16,25 @@ export class AuctionLot {
   @PrimaryGeneratedColumn('uuid', { name: 'id' })
   id: string;
 
-  @Column({ nullable: false })
+  @Column()
   productName: string;
 
-  @Column()
+  @Column({ nullable: true })
   itemOverview: string;
 
-  @Column()
+  @Column({ nullable: true })
   paymentShippingDetails: string;
 
-  @Column()
+  @Column({ nullable: true })
   terms: string;
 
-  @Column()
+  @Column({ nullable: true })
   estPriceLine: string;
 
-  @Column({ nullable: false })
+  @Column()
   startingPrice: number;
 
-  @Column()
+  @Column({ nullable: true })
   imageUrls: string;
 
   @ManyToOne(() => User, (user) => user.auctions)
@@ -45,13 +45,16 @@ export class AuctionLot {
   @JoinColumn({ name: 'auctionId' })
   auction: Relation<Auction>;
 
-  @Column({ nullable: false })
+  @Column()
   status: 'pending' | 'active' | 'ended';
 
-  @Column({ nullable: false })
-  createdAt: Date;
+  @Column({ nullable: true })
+  endAt: Date;
 
   @Column()
+  createdAt: Date;
+
+  @Column({ nullable: true })
   updatedAt: Date;
 
   @OneToMany(() => Bid, (bid) => bid.auctionLot)

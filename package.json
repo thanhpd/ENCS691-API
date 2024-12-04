@@ -26,6 +26,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@azure/storage-blob": "^12.26.0",
     "@nestjs/axios": "^3.1.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.3.0",
@@ -42,8 +43,10 @@
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "date-fns": "^4.1.0",
     "helmet": "^8.0.0",
     "joi": "^17.13.3",
+    "multer": "^1.4.5-lts.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",

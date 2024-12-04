@@ -14,7 +14,7 @@ export class Bid {
   @PrimaryGeneratedColumn('uuid', { name: 'id' })
   id: string;
 
-  @Column({ nullable: false })
+  @Column()
   amount: number;
 
   @ManyToOne(() => User, (user) => user.bids)
@@ -25,6 +25,6 @@ export class Bid {
   @JoinColumn({ name: 'auctionLotId' })
   auctionLot: Relation<AuctionLot>;
 
-  @Column({ nullable: false })
+  @Column()
   createdAt: Date;
 }

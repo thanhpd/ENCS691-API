@@ -1,4 +1,4 @@
-import { AuctionType } from 'src/auction/enums/auction-type.enum';
+import { AuctionType } from '../auction/enums/auction-type.enum';
 import { AuctionLot } from '../auction-lot/auction-lot.entity';
 import { User } from '../user/user.entity';
 import {
@@ -10,27 +10,26 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
-import { AuctionStatus } from 'src/auction/enums/auction-status.enum';
+import { AuctionStatus } from '../auction/enums/auction-status.enum';
 
 @Entity({ name: 'auction' })
 export class Auction {
   @PrimaryGeneratedColumn('uuid', { name: 'id' })
   id: string;
 
-  @Column({ nullable: false })
+  @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   thumbnailUrl: string;
 
-  @Column({ nullable: false })
+  @Column()
   startAt: Date;
 
-  @Column()
+  @Column({ nullable: true })
   details: string;
 
   @Column({
-    nullable: false,
     type: 'enum',
     enum: AuctionType,
     default: AuctionType.TIMED,
@@ -42,17 +41,16 @@ export class Auction {
   creator: Relation<User>;
 
   @Column({
-    nullable: false,
     type: 'enum',
     enum: AuctionStatus,
     default: AuctionStatus.PENDING,
   })
   status: 'pending' | 'active' | 'ended';
 
-  @Column({ nullable: false })
+  @Column()
   createdAt: Date;
 
-  @Column()
+  @Column({ nullable: true })
   updatedAt: Date;
 
   @OneToMany(() => AuctionLot, (auctionLot) => auctionLot.auction)

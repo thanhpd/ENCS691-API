@@ -1,20 +1,20 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Migration1733282351673 implements MigrationInterface {
-  name = 'Migration1733282351673';
+export class Migration1733347663897 implements MigrationInterface {
+  name = 'Migration1733347663897';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
       `CREATE TABLE "bid" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "amount" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL, "bidderId" uuid, "auctionLotId" uuid, CONSTRAINT "PK_ed405dda320051aca2dcb1a50bb" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "auctionLot" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "productName" character varying NOT NULL, "itemOverview" character varying NOT NULL, "paymentShippingDetails" character varying NOT NULL, "terms" character varying NOT NULL, "estPriceLine" character varying NOT NULL, "startingPrice" integer NOT NULL, "imageUrls" character varying NOT NULL, "status" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL, "updatedAt" TIMESTAMP NOT NULL, "creatorId" uuid, "auctionId" uuid, CONSTRAINT "PK_a22a8beddb365dbad47f9e3b92b" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "auctionLot" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "productName" character varying NOT NULL, "itemOverview" character varying, "paymentShippingDetails" character varying, "terms" character varying, "estPriceLine" character varying, "startingPrice" integer NOT NULL, "imageUrls" character varying, "status" character varying NOT NULL, "endAt" TIMESTAMP, "createdAt" TIMESTAMP NOT NULL, "updatedAt" TIMESTAMP, "creatorId" uuid, "auctionId" uuid, CONSTRAINT "PK_a22a8beddb365dbad47f9e3b92b" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "auction" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "thumbnailUrl" character varying NOT NULL, "startAt" TIMESTAMP NOT NULL, "details" character varying NOT NULL, "type" character varying NOT NULL, "status" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL, "updatedAt" TIMESTAMP NOT NULL, "creatorId" uuid, CONSTRAINT "PK_9dc876c629273e71646cf6dfa67" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "auction" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "thumbnailUrl" character varying, "startAt" TIMESTAMP NOT NULL, "details" character varying, "type" "public"."auction_type_enum" NOT NULL DEFAULT 'timed', "status" "public"."auction_status_enum" NOT NULL DEFAULT 'pending', "createdAt" TIMESTAMP NOT NULL, "updatedAt" TIMESTAMP, "creatorId" uuid, CONSTRAINT "PK_9dc876c629273e71646cf6dfa67" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "avatarUrl" character varying NOT NULL, "email" character varying NOT NULL, "password" character varying NOT NULL, "firstName" character varying NOT NULL, "lastName" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL, "updatedAt" TIMESTAMP NOT NULL, CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22" UNIQUE ("email"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "avatarUrl" character varying, "email" character varying NOT NULL, "password" character varying NOT NULL, "firstName" character varying NOT NULL, "lastName" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL, "updatedAt" TIMESTAMP, CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22" UNIQUE ("email"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `ALTER TABLE "bid" ADD CONSTRAINT "FK_1345c9f3ee0789dcff101f6c79b" FOREIGN KEY ("bidderId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,

@@ -15,13 +15,13 @@ export class User {
   @PrimaryGeneratedColumn('uuid', { name: 'id' })
   id: string;
 
-  @Column()
+  @Column({ nullable: true })
   avatarUrl: string;
 
-  @Column({ nullable: false, unique: true })
+  @Column({ unique: true })
   email: string;
 
-  @Column({ nullable: false })
+  @Column()
   password: string;
 
   @Column()
@@ -30,10 +30,10 @@ export class User {
   @Column()
   lastName: string;
 
-  @Column({ nullable: false })
+  @Column()
   createdAt: Date;
 
-  @Column()
+  @Column({ nullable: true })
   updatedAt: Date;
 
   @OneToMany(() => Auction, (auction) => auction.creator)
