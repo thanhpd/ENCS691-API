@@ -23,6 +23,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
+      stopAtFirstError: true,
       // skipMissingProperties: true, // Remember to add @IsOptional() to an optional field
     }),
     // new TrimBodyPipe(),

@@ -1,5 +1,5 @@
 import {
-  IsBoolean,
+  IsBooleanString,
   IsDateString,
   IsEnum,
   IsOptional,
@@ -27,6 +27,6 @@ export class CreateAuctionDto {
   type: AuctionType;
 
   @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
+  @IsBooleanString()
+  isActive?: string;
 }

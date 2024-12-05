@@ -1,24 +1,29 @@
-import { IsArray, IsPositive, IsString } from 'class-validator';
+import { IsArray, IsNumberString, IsOptional, IsString } from 'class-validator';
 
 export class CreateAuctionLotDto {
   @IsString()
   productName: string;
 
+  @IsOptional()
   @IsString()
-  itemOverview: string;
+  itemOverview?: string;
 
+  @IsOptional()
   @IsString()
-  paymentShippingDetails: string;
+  paymentShippingDetails?: string;
 
+  @IsOptional()
   @IsString()
-  terms: string;
+  terms?: string;
 
+  @IsOptional()
   @IsString()
-  estPriceLine: string;
+  estPriceLine?: string;
 
-  @IsPositive()
+  @IsNumberString()
   startingPrice: number;
 
+  @IsOptional()
   @IsArray()
   productImages: Express.Multer.File[];
 }
