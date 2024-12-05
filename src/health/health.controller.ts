@@ -4,6 +4,7 @@ import {
   HttpHealthIndicator,
   HealthCheck,
 } from '@nestjs/terminus';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('health')
 export class HealthController {
@@ -12,6 +13,7 @@ export class HealthController {
     private http: HttpHealthIndicator,
   ) {}
 
+  @Public()
   @Get()
   @HealthCheck()
   check() {
