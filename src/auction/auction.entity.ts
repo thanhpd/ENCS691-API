@@ -21,13 +21,13 @@ export class Auction {
   name: string;
 
   @Column({ nullable: true })
-  thumbnailUrl: string;
+  thumbnailUrl?: string;
 
   @Column()
   startAt: Date;
 
   @Column({ nullable: true })
-  details: string;
+  details?: string;
 
   @Column({
     type: 'enum',
@@ -51,8 +51,8 @@ export class Auction {
   createdAt: Date;
 
   @Column({ nullable: true })
-  updatedAt: Date;
+  updatedAt?: Date;
 
   @OneToMany(() => AuctionLot, (auctionLot) => auctionLot.auction)
-  auctionLots: Relation<AuctionLot[]>;
+  auctionLots?: Relation<AuctionLot[]>;
 }

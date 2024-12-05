@@ -9,12 +9,14 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from 'src/auth/local.strategy';
 import { JwtStrategy } from 'src/auth/jwt.strategy';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { MediaModule } from 'src/common/media/media.module';
 
 @Module({
   imports: [
     UserModule,
     PassportModule,
     JwtModule.registerAsync(jwtConfig.asProvider()),
+    MediaModule,
   ],
   controllers: [AuthController],
   providers: [

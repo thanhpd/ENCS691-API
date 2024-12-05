@@ -1,7 +1,7 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateUserDto {
-  avatarUrl?: string;
+  avatar?: Express.Multer.File;
 
   @IsEmail()
   email: string;

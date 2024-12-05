@@ -36,7 +36,6 @@ export class AuthService {
       throw new InternalServerErrorException();
     }
 
-    delete user.password;
     return user;
   }
 }

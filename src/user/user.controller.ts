@@ -22,7 +22,6 @@ export class UsersController {
 
     const { userId } = req.user;
     const user: User = await this.usersService.findOne(userId);
-    delete user.password;
 
     return user;
   }

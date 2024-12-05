@@ -1,27 +1,36 @@
 import {
+  Body,
   Controller,
   Post,
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  Request,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuctionService } from 'src/auction/auction.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { MediaService } from 'src/common/media/media.service';
 
 @Controller('auction')
 export class AuctionController {
-  constructor(
-    private auctionService: AuctionService,
-    private mediaService: MediaService,
-  ) {}
+  constructor(private auctionService: AuctionService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    const url = await this.mediaService.uploadFile(file, 'auctions');
-    return { url };
+  @Post()
+  @UseInterceptors(FileInterceptor('thumbnailImg'))
+  async create(
+    @UploadedFile() thumbnailImg: Express.Multer.File,
+    @Body() body,
+    @Request() req: any,
+  ) {
+    const { userId } = req.user;
+
+    return this.auctionService.create(
+      {
+        ...body,
+        thumbnailImg,
+      },
+      userId,
+    );
   }
 }

@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { MediaService } from 'src/common/media/media.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
@@ -10,6 +11,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    private readonly mediaService: MediaService,
   ) {}
 
   private async comparePasswords(
@@ -51,12 +53,22 @@ export class UserService {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
 
-    const user = this.usersRepository.create({
+    let user = this.usersRepository.create({
       ...userDto,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
-    await this.usersRepository.save(user);
+
+    if (userDto.avatar) {
+      const avatarUrl = await this.mediaService.uploadFile(
+        userDto.avatar,
+        'users',
+      );
+      user.avatarUrl = avatarUrl;
+    }
+
+    user = await this.usersRepository.save(user);
+    delete user.password;
 
     return user;
   }

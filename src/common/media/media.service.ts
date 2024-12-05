@@ -7,7 +7,10 @@ import { randomUUID } from 'crypto';
 export class MediaService {
   constructor(private configService: ConfigService) {}
 
-  async uploadFile(file: Express.Multer.File, containerName: string) {
+  async uploadFile(
+    file: Express.Multer.File,
+    containerName: 'users' | 'auctions' | 'products',
+  ) {
     const extension = file.originalname.split('.').pop();
     const file_name = randomUUID() + '.' + extension;
     const blockBlobClient = await this.getBlobClient(file_name, containerName);
