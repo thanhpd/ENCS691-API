@@ -34,7 +34,7 @@ export class UserService {
   }): Promise<User | undefined> {
     const user = await this.usersRepository.findOne({
       where: { email },
-      select: ['password'],
+      select: ['password', 'id', 'email'],
     });
 
     if (!user) {
