@@ -18,7 +18,7 @@ const config: TypeOrmModuleOptions = {
     // 'src/**/*.entity{.ts,.js}',
   ],
   migrations: [
-    'dist/database/migrations/*{.ts,.js}',
+    // 'dist/database/migrations/*{.ts,.js}',
     // 'src/database/migrations/*{.ts,.js}',
   ],
   synchronize: false,
