@@ -34,8 +34,8 @@ export class AuctionLot {
   @Column()
   startingPrice: number;
 
-  @Column({ nullable: true })
-  imageUrls: string;
+  @Column({ nullable: true, type: 'simple-array' })
+  imageUrls: string[];
 
   @ManyToOne(() => User, (user) => user.auctions)
   @JoinColumn({ name: 'creatorId' })

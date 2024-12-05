@@ -9,7 +9,7 @@ export class MediaService {
 
   async uploadFile(
     file: Express.Multer.File,
-    containerName: 'users' | 'auctions' | 'products',
+    containerName: 'users' | 'auctions' | 'auction-lots',
   ) {
     const extension = file.originalname.split('.').pop();
     const file_name = randomUUID() + '.' + extension;

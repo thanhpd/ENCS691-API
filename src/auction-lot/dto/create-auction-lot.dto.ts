@@ -1,4 +1,4 @@
-import { IsPositive, IsString } from 'class-validator';
+import { IsArray, IsPositive, IsString } from 'class-validator';
 
 export class CreateAuctionLotDto {
   @IsString()
@@ -18,4 +18,7 @@ export class CreateAuctionLotDto {
 
   @IsPositive()
   startingPrice: number;
+
+  @IsArray()
+  productImages: Express.Multer.File[];
 }

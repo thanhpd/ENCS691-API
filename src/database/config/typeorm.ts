@@ -22,7 +22,7 @@ const config: TypeOrmModuleOptions = {
     // 'src/database/migrations/*{.ts,.js}',
   ],
   synchronize: false,
-  migrationsRun: true,
+  migrationsRun: false,
   logging: true,
 };
 

@@ -45,4 +45,14 @@ export class AuctionService {
 
     return this.auctionRepository.save(newAuction);
   }
+
+  async listAll(): Promise<Auction[]> {
+    return this.auctionRepository.find();
+  }
+
+  async findById(id: string): Promise<Auction> {
+    return this.auctionRepository.findOne({
+      where: { id },
+    });
+  }
 }

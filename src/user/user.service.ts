@@ -21,7 +21,7 @@ export class UserService {
     return await bcrypt.compare(currentPassword, storedPassword);
   }
 
-  async findOneByEmail(email: string): Promise<User | undefined> {
+  async findOneByEmail(email: string): Promise<User> {
     return this.usersRepository.findOne({ where: { email } });
   }
 
@@ -32,7 +32,10 @@ export class UserService {
     email: string;
     password: string;
   }): Promise<User | undefined> {
-    const user = await this.findOneByEmail(email);
+    const user = await this.usersRepository.findOne({
+      where: { email },
+      select: ['password'],
+    });
 
     if (!user) {
       throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);

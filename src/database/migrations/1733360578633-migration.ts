@@ -1,14 +1,14 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Migration1733347663897 implements MigrationInterface {
-  name = 'Migration1733347663897';
+export class Migration1733360578633 implements MigrationInterface {
+  name = 'Migration1733360578633';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
       `CREATE TABLE "bid" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "amount" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL, "bidderId" uuid, "auctionLotId" uuid, CONSTRAINT "PK_ed405dda320051aca2dcb1a50bb" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "auctionLot" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "productName" character varying NOT NULL, "itemOverview" character varying, "paymentShippingDetails" character varying, "terms" character varying, "estPriceLine" character varying, "startingPrice" integer NOT NULL, "imageUrls" character varying, "status" character varying NOT NULL, "endAt" TIMESTAMP, "createdAt" TIMESTAMP NOT NULL, "updatedAt" TIMESTAMP, "creatorId" uuid, "auctionId" uuid, CONSTRAINT "PK_a22a8beddb365dbad47f9e3b92b" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "auctionLot" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "productName" character varying NOT NULL, "itemOverview" character varying, "paymentShippingDetails" character varying, "terms" character varying, "estPriceLine" character varying, "startingPrice" integer NOT NULL, "imageUrls" text, "status" character varying NOT NULL, "endAt" TIMESTAMP, "createdAt" TIMESTAMP NOT NULL, "updatedAt" TIMESTAMP, "creatorId" uuid, "auctionId" uuid, CONSTRAINT "PK_a22a8beddb365dbad47f9e3b92b" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "auction" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "thumbnailUrl" character varying, "startAt" TIMESTAMP NOT NULL, "details" character varying, "type" "public"."auction_type_enum" NOT NULL DEFAULT 'timed', "status" "public"."auction_status_enum" NOT NULL DEFAULT 'pending', "createdAt" TIMESTAMP NOT NULL, "updatedAt" TIMESTAMP, "creatorId" uuid, CONSTRAINT "PK_9dc876c629273e71646cf6dfa67" PRIMARY KEY ("id"))`,
