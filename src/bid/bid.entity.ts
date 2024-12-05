@@ -27,4 +27,7 @@ export class Bid {
 
   @Column()
   createdAt: Date;
+
+  @Column({ default: false })
+  isHighestBid: boolean;
 }

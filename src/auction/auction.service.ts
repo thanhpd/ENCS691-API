@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Auction } from 'src/auction/auction.entity';
 import { CreateAuctionDto } from 'src/auction/dto/create-auction.dto';
@@ -22,7 +22,13 @@ export class AuctionService {
     });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'User not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const newAuction = this.auctionRepository.create({

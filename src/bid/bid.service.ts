@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuctionLot } from 'src/auction-lot/auction-lot.entity';
 import { Bid } from 'src/bid/bid.entity';
-import { BidDto } from 'src/bid/dto/bid.dto';
+import { CreateBidDto } from 'src/bid/dto/create-bid.dto';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 
@@ -17,30 +17,80 @@ export class BidService {
     private readonly auctionLotRepository: Repository<AuctionLot>,
   ) {}
 
-  async create(bid: BidDto, userId: string, auctionId: string): Promise<Bid> {
+  async create(
+    bid: CreateBidDto,
+    userId: string,
+    auctionLotId: string,
+  ): Promise<Bid> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'User not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const auctionLot = await this.auctionLotRepository.findOne({
-      where: { id: auctionId },
+      where: { id: auctionLotId },
     });
 
     if (!auctionLot) {
-      throw new Error('Auction lot not found');
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'Auction lot not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
     }
 
-    const newBid = await this.bidRepository.create({
-      amount: bid.amount,
-      createdAt: new Date(),
-      bidder: user,
-      auctionLot,
+    const highestBid = await this.bidRepository.findOne({
+      where: { auctionLot: { id: auctionLotId }, isHighestBid: true },
     });
 
-    return newBid;
+    if (highestBid && bid.amount <= highestBid.amount) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Bid amount must be higher than the current highest bid',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    let returningBid: Bid;
+
+    await this.bidRepository.manager.transaction(
+      async (transactionalEntityManager) => {
+        if (highestBid) {
+          highestBid.isHighestBid = false;
+          await transactionalEntityManager.save(highestBid);
+        }
+
+        const newBid = await this.bidRepository.create({
+          amount: bid.amount,
+          createdAt: new Date(),
+          bidder: user,
+          auctionLot,
+          isHighestBid: true,
+        });
+
+        returningBid = await transactionalEntityManager.save(newBid);
+      },
+    );
+    return returningBid;
+  }
+
+  async getBidsForAuctionLot(auctionLotId: string): Promise<Bid[]> {
+    return this.bidRepository.find({
+      where: { auctionLot: { id: auctionLotId } },
+      relations: ['bidder'],
+    });
   }
 }

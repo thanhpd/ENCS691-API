@@ -15,14 +15,19 @@ import {
   FileInterceptor,
 } from '@nestjs/platform-express';
 import { AuctionLotService } from 'src/auction-lot/auction-lot.service';
+import { CreateAuctionLotDto } from 'src/auction-lot/dto/create-auction-lot.dto';
 import { AuctionService } from 'src/auction/auction.service';
+import { CreateAuctionDto } from 'src/auction/dto/create-auction.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { BidService } from 'src/bid/bid.service';
+import { CreateBidDto } from 'src/bid/dto/create-bid.dto';
 
 @Controller('auction')
 export class AuctionController {
   constructor(
     private auctionService: AuctionService,
     private auctionLotService: AuctionLotService,
+    private bidService: BidService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -30,7 +35,7 @@ export class AuctionController {
   @UseInterceptors(FileInterceptor('thumbnailImg'))
   async create(
     @UploadedFile() thumbnailImg: Express.Multer.File,
-    @Body() body,
+    @Body() body: CreateAuctionDto,
     @Request() req: any,
   ) {
     const { userId } = req.user;
@@ -64,7 +69,7 @@ export class AuctionController {
   async createLot(
     @Param('auctionId') auctionId: string,
     @UploadedFiles() files: { productImages: Express.Multer.File[] },
-    @Body() body,
+    @Body() body: CreateAuctionLotDto,
     @Request() req: any,
   ) {
     const { userId } = req.user;
@@ -89,5 +94,18 @@ export class AuctionController {
   @Get(':auctionId/lot/:lotId')
   async getLot(@Param('lotId') lotId: string) {
     return this.auctionLotService.findById(lotId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':auctionId/lot/:lotId/bid')
+  async createBid(
+    @Param('auctionId') auctionId: string,
+    @Param('lotId') lotId: string,
+    @Body() body: CreateBidDto,
+    @Request() req: any,
+  ) {
+    const { userId } = req.user;
+
+    return this.bidService.create(body, userId, lotId);
   }
 }

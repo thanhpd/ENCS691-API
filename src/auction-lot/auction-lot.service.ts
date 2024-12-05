@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuctionLot } from 'src/auction-lot/auction-lot.entity';
 import { CreateAuctionLotDto } from 'src/auction-lot/dto/create-auction-lot.dto';
@@ -29,7 +29,13 @@ export class AuctionLotService {
     });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'User not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const auction = await this.auctionRepository.findOne({
@@ -37,7 +43,13 @@ export class AuctionLotService {
     });
 
     if (!auction) {
-      throw new Error('Auction not found');
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'Auction not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     let newAuctionLot = await this.auctionLotRepository.create({
