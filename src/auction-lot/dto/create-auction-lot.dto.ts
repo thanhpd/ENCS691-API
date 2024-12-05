@@ -1,4 +1,11 @@
-import { IsArray, IsNumberString, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsBooleanString,
+  IsDateString,
+  IsNumberString,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateAuctionLotDto {
   @IsString()
@@ -25,5 +32,15 @@ export class CreateAuctionLotDto {
 
   @IsOptional()
   @IsArray()
-  productImages: Express.Multer.File[];
+  productImages?: Express.Multer.File[];
+
+  @IsBooleanString()
+  isStartNow: string;
+
+  @IsOptional()
+  @IsDateString()
+  startAt?: string;
+
+  @IsNumberString()
+  intervalInMinutes: string;
 }

@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { AuctionModule } from './auction/auction.module';
 import { AuctionLotModule } from './auction-lot/auction-lot.module';
 import { BidModule } from './bid/bid.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { BidModule } from './bid/bid.module';
         configService.get('typeorm'),
     }),
     EventEmitterModule.forRoot(),
+    ScheduleModule.forRoot(),
     HealthModule,
     AuthModule,
     UserModule,

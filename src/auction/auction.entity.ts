@@ -2,6 +2,8 @@ import { AuctionType } from '../auction/enums/auction-type.enum';
 import { AuctionLot } from '../auction-lot/auction-lot.entity';
 import { User } from '../user/user.entity';
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   JoinColumn,
@@ -55,4 +57,14 @@ export class Auction {
 
   @OneToMany(() => AuctionLot, (auctionLot) => auctionLot.auction)
   auctionLots?: Relation<AuctionLot[]>;
+
+  @BeforeInsert()
+  setCreatedAt() {
+    this.createdAt = new Date();
+  }
+
+  @BeforeUpdate()
+  setUpdatedAt() {
+    this.updatedAt = new Date();
+  }
 }

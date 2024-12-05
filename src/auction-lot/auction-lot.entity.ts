@@ -1,6 +1,8 @@
 import { User } from '../user/user.entity';
 import { Bid } from '../bid/bid.entity';
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   JoinColumn,
@@ -48,8 +50,14 @@ export class AuctionLot {
   @Column()
   status: 'pending' | 'active' | 'ended';
 
+  @Column()
+  startAt: Date;
+
   @Column({ nullable: true })
   endAt: Date;
+
+  @Column({ default: 5 })
+  intervalInMinutes: number;
 
   @Column()
   createdAt: Date;
@@ -59,4 +67,14 @@ export class AuctionLot {
 
   @OneToMany(() => Bid, (bid) => bid.auctionLot)
   bids: Relation<Bid[]>;
+
+  @BeforeInsert()
+  setCreatedAt() {
+    this.createdAt = new Date();
+  }
+
+  @BeforeUpdate()
+  setUpdatedAt() {
+    this.updatedAt = new Date();
+  }
 }

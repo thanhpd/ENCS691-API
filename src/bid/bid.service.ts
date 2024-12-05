@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { addMinutes } from 'date-fns';
 import { AuctionLot } from 'src/auction-lot/auction-lot.entity';
 import { Bid } from 'src/bid/bid.entity';
 import { CreateBidDto } from 'src/bid/dto/create-bid.dto';
@@ -82,6 +83,12 @@ export class BidService {
         });
 
         returningBid = await transactionalEntityManager.save(newBid);
+
+        auctionLot.endAt = addMinutes(
+          new Date(),
+          Number(auctionLot.intervalInMinutes) || 5,
+        );
+        await transactionalEntityManager.save(auctionLot);
       },
     );
     return returningBid;

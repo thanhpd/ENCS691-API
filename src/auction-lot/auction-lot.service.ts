@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { addMinutes, startOfSecond } from 'date-fns';
 import { AuctionLot } from 'src/auction-lot/auction-lot.entity';
 import { CreateAuctionLotDto } from 'src/auction-lot/dto/create-auction-lot.dto';
 import { Auction } from 'src/auction/auction.entity';
@@ -52,15 +53,23 @@ export class AuctionLotService {
       );
     }
 
+    const isStartNow = auctionLot.isStartNow == 'true';
+    const startAt = startOfSecond(
+      isStartNow ? new Date() : new Date(auctionLot.startAt),
+    );
+
     let newAuctionLot = await this.auctionLotRepository.create({
       productName: auctionLot.productName,
       itemOverview: auctionLot.itemOverview,
-      status: 'pending',
       paymentShippingDetails: auctionLot.paymentShippingDetails,
       terms: auctionLot.terms,
       estPriceLine: auctionLot.estPriceLine,
       startingPrice: auctionLot.startingPrice,
       createdAt: new Date(),
+      status: isStartNow ? 'active' : 'pending',
+      startAt,
+      endAt: addMinutes(startAt, Number(auctionLot.intervalInMinutes) || 5),
+      intervalInMinutes: Number(auctionLot.intervalInMinutes) || 5,
       creator: user,
       auction,
     });

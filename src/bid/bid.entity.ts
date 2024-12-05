@@ -1,6 +1,7 @@
 import { AuctionLot } from '../auction-lot/auction-lot.entity';
 import { User } from '../user/user.entity';
 import {
+  BeforeInsert,
   Column,
   Entity,
   JoinColumn,
@@ -30,4 +31,9 @@ export class Bid {
 
   @Column({ default: false })
   isHighestBid: boolean;
+
+  @BeforeInsert()
+  setCreatedAt() {
+    this.createdAt = new Date();
+  }
 }
