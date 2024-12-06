@@ -7,6 +7,10 @@ import { Auction } from 'src/auction/auction.entity';
 import { MediaService } from 'src/common/media/media.service';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
+import { Socket } from 'socket.io';
+import { WsException } from '@nestjs/websockets';
+import { JwtService } from '@nestjs/jwt';
+import { ITokenContent } from 'src/auth/token-content.interface';
 
 @Injectable()
 export class AuctionLotService {
@@ -18,6 +22,7 @@ export class AuctionLotService {
     @InjectRepository(Auction)
     private readonly auctionRepository: Repository<Auction>,
     private readonly mediaService: MediaService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async create(
@@ -98,5 +103,27 @@ export class AuctionLotService {
     return this.auctionLotRepository.findOne({
       where: { id },
     });
+  }
+
+  async getUserFromSocket(socket: Socket) {
+    try {
+      let authToken = socket.handshake.headers.authorization;
+      authToken = authToken?.split(' ')[1];
+
+      const tokenContent =
+        await this.jwtService.verifyAsync<ITokenContent>(authToken);
+      const user = await this.userRepository.findOne({
+        where: { id: tokenContent.sub },
+      });
+
+      if (!user) {
+        throw new WsException('Invalid credentials');
+      }
+
+      return user;
+    } catch (error) {
+      console.log(error);
+      socket.disconnect();
+    }
   }
 }

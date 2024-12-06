@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { addMinutes } from 'date-fns';
 import { AuctionLot } from 'src/auction-lot/auction-lot.entity';
@@ -6,6 +7,7 @@ import { Bid } from 'src/bid/bid.entity';
 import { CreateBidDto } from 'src/bid/dto/create-bid.dto';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
+import { MessageEvent } from './enums/message-event.enum';
 
 @Injectable()
 export class BidService {
@@ -16,6 +18,7 @@ export class BidService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(AuctionLot)
     private readonly auctionLotRepository: Repository<AuctionLot>,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async create(
@@ -91,6 +94,8 @@ export class BidService {
         await transactionalEntityManager.save(auctionLot);
       },
     );
+
+    this.eventEmitter.emit(MessageEvent.OnNewBidCreated, returningBid);
     return returningBid;
   }
 

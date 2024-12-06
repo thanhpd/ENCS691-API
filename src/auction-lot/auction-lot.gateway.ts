@@ -10,9 +10,14 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { AuctionLotService } from 'src/auction-lot/auction-lot.service';
+import { Socket } from 'socket.io';
+import { OnEvent } from '@nestjs/event-emitter';
+import { MessageEvent } from 'src/bid/enums/message-event.enum';
+import { Bid } from 'src/bid/bid.entity';
 
 @WebSocketGateway({
-  namespace: 'auction-lot-ws',
+  namespace: 'lot',
 })
 export class AuctionLotGateway
   implements OnGatewayConnection, OnGatewayDisconnect
@@ -20,8 +25,10 @@ export class AuctionLotGateway
   @WebSocketServer()
   server: Server;
 
-  async handleConnection() {
-    // await this.connectSocketUserAction.execute(this.server, client);
+  constructor(private auctionLotService: AuctionLotService) {}
+
+  async handleConnection(client: Socket) {
+    this.auctionLotService.getUserFromSocket(client);
   }
 
   async handleDisconnect() {
@@ -37,8 +44,8 @@ export class AuctionLotGateway
   //   return this.sendMessageAction.execute(client, data);
   // }
 
-  // @OnEvent(MessageEvent.OnMessageCreated)
-  // async onMessageCreated(event: OnMessageCreatedEvent) {
-  //   await this.onMessageCreatedAction.execute(this.server, event);
-  // }
+  @OnEvent(MessageEvent.OnNewBidCreated)
+  async onNewBidCreated(event: Bid) {
+    this.server.to(event.auctionLot.id).emit('onNewBidCreated', event);
+  }
 }

@@ -8,9 +8,15 @@ import { Auction } from 'src/auction/auction.entity';
 import { User } from 'src/user/user.entity';
 import { AuctionLotGateway } from './auction-lot.gateway';
 import { AuctionLotScheduler } from 'src/auction-lot/auction-lot.scheduler';
+import { JwtModule } from '@nestjs/jwt';
+import jwtConfig from 'src/auth/config/jwt.config';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AuctionLot, Auction, User]), MediaModule],
+  imports: [
+    TypeOrmModule.forFeature([AuctionLot, Auction, User]),
+    MediaModule,
+    JwtModule.registerAsync(jwtConfig.asProvider()),
+  ],
   controllers: [AuctionLotController],
   providers: [AuctionLotService, AuctionLotGateway, AuctionLotScheduler],
   exports: [AuctionLotService, TypeOrmModule],

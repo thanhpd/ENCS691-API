@@ -4,6 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ITokenContent } from 'src/auth/token-content.interface';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { User } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
@@ -24,7 +25,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const payload = { sub: user.id, email: user.email };
+    const payload: ITokenContent = { sub: user.id, email: user.email };
     return {
       access_token: this.jwtService.sign(payload),
     };
