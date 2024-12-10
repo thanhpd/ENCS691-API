@@ -34,11 +34,13 @@ async function bootstrap() {
   // Starts listening for shutdown hooks
   app.enableShutdownHooks();
 
-  // app.enableCors({
-  //   origin:
-  //     configService.get('BUILD_ENV') !== 'prod' ? [/localhost:([0-9])+/] : true,
-  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-  // });
+  app.enableCors({
+    origin: [
+      /localhost:([0-9])+/,
+      ...(process.env.CORS_ALLOWANCE || '').split(','),
+    ],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  });
 
   await app.listen(process.env.PORT || 8080);
 }
