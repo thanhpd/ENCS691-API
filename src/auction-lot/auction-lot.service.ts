@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { addMinutes, startOfSecond } from 'date-fns';
+import { addMinutes, startOfMinute } from 'date-fns';
 import { AuctionLot } from 'src/auction-lot/auction-lot.entity';
 import { CreateAuctionLotDto } from 'src/auction-lot/dto/create-auction-lot.dto';
 import { Auction } from 'src/auction/auction.entity';
@@ -59,7 +59,7 @@ export class AuctionLotService {
     }
 
     const isStartNow = auctionLot.isStartNow == 'true';
-    const startAt = startOfSecond(
+    const startAt = startOfMinute(
       isStartNow ? new Date() : new Date(auctionLot.startAt),
     );
 
@@ -93,9 +93,11 @@ export class AuctionLotService {
   }
 
   async listAllByAuctionId(auctionId: string): Promise<AuctionLot[]> {
-    console.log(auctionId);
     return this.auctionLotRepository.find({
       where: { auction: { id: auctionId } },
+      order: {
+        startAt: 'asc',
+      },
     });
   }
 
@@ -122,7 +124,7 @@ export class AuctionLotService {
 
       return user;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       socket.disconnect();
     }
   }

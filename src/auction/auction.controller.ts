@@ -21,6 +21,7 @@ import { CreateAuctionDto } from 'src/auction/dto/create-auction.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { BidService } from 'src/bid/bid.service';
 import { CreateBidDto } from 'src/bid/dto/create-bid.dto';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('auction')
 export class AuctionController {
@@ -49,10 +50,16 @@ export class AuctionController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Public()
   @Get()
   async listAll() {
     return this.auctionService.listAll();
+  }
+
+  @Public()
+  @Get('/upcoming')
+  async listAllUpcoming() {
+    return this.auctionService.listAllActiveAndPending();
   }
 
   @UseGuards(JwtAuthGuard)

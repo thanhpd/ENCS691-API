@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { startOfMinute } from 'date-fns';
 import { Auction } from 'src/auction/auction.entity';
 import { CreateAuctionDto } from 'src/auction/dto/create-auction.dto';
 import { MediaService } from 'src/common/media/media.service';
@@ -31,12 +32,14 @@ export class AuctionService {
       );
     }
 
+    const isActive = auction.isActive === 'true';
+
     const newAuction = this.auctionRepository.create({
       name: auction.name,
       details: auction.details,
       type: auction.type,
-      status: 'pending',
-      startAt: auction.startAt,
+      status: isActive ? 'active' : 'pending',
+      startAt: startOfMinute(isActive ? new Date() : new Date(auction.startAt)),
       createdAt: new Date(),
       creator: user,
     });
@@ -53,7 +56,20 @@ export class AuctionService {
   }
 
   async listAll(): Promise<Auction[]> {
-    return this.auctionRepository.find();
+    return this.auctionRepository.find({
+      order: {
+        startAt: 'asc',
+      },
+    });
+  }
+
+  async listAllActiveAndPending(): Promise<Auction[]> {
+    return this.auctionRepository.find({
+      where: [{ status: 'active' }, { status: 'pending' }],
+      order: {
+        startAt: 'asc',
+      },
+    });
   }
 
   async findById(id: string): Promise<Auction> {

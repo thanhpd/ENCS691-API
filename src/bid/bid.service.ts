@@ -105,4 +105,11 @@ export class BidService {
       relations: ['bidder'],
     });
   }
+
+  async getBidsForUser(userId: string): Promise<Bid[]> {
+    return this.bidRepository.find({
+      where: { bidder: { id: userId } },
+      relations: ['auctionLot', 'auctionLot.auction'],
+    });
+  }
 }
