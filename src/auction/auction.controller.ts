@@ -62,7 +62,7 @@ export class AuctionController {
     return this.auctionService.listAllActiveAndPending();
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Public()
   @Get(':auctionId')
   async getOne(@Param('auctionId') auctionId: string) {
     return this.auctionService.findById(auctionId);
@@ -91,13 +91,13 @@ export class AuctionController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Public()
   @Get(':auctionId/lot')
   async listLots(@Param('auctionId') auctionId: string) {
     return this.auctionLotService.listAllByAuctionId(auctionId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Public()
   @Get(':auctionId/lot/:lotId')
   async getLot(@Param('lotId') lotId: string) {
     return this.auctionLotService.findById(lotId);
