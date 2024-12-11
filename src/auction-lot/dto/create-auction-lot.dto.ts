@@ -43,4 +43,8 @@ export class CreateAuctionLotDto {
 
   @IsNumberString()
   intervalInMinutes: string;
+
+  @IsOptional()
+  @IsBooleanString()
+  isAutoExtendAfterTimerEnds?: string;
 }

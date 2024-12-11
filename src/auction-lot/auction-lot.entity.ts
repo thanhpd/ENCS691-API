@@ -59,6 +59,9 @@ export class AuctionLot {
   @Column({ default: 5 })
   intervalInMinutes: number;
 
+  @Column({ default: false })
+  isAutoExtendAfterTimerEnds: boolean;
+
   @Column()
   createdAt: Date;
 

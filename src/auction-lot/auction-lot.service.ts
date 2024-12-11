@@ -58,6 +58,16 @@ export class AuctionLotService {
       );
     }
 
+    if (auctionLot.isStartNow == 'false' && !auctionLot.startAt) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Start date is required',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const isStartNow = auctionLot.isStartNow == 'true';
     const startAt = startOfMinute(
       isStartNow ? new Date() : new Date(auctionLot.startAt),
@@ -77,6 +87,8 @@ export class AuctionLotService {
       intervalInMinutes: Number(auctionLot.intervalInMinutes) || 5,
       creator: user,
       auction,
+      isAutoExtendAfterTimerEnds:
+        auctionLot.isAutoExtendAfterTimerEnds == 'true',
     });
 
     if (auctionLot.productImages) {
@@ -98,6 +110,7 @@ export class AuctionLotService {
       order: {
         startAt: 'asc',
       },
+      relations: ['bids'],
     });
   }
 
