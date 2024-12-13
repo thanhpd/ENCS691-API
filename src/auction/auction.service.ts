@@ -69,6 +69,7 @@ export class AuctionService {
       order: {
         startAt: 'asc',
       },
+      relations: ['creator'],
     });
   }
 

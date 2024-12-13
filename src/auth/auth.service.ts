@@ -16,8 +16,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string) {
-    return this.usersService.validateCredentials({ email, password });
+  async validateUser(userName: string, password: string) {
+    return this.usersService.validateCredentials({ userName, password });
   }
 
   async login(user: User) {
@@ -25,7 +25,11 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const payload: ITokenContent = { sub: user.id, email: user.email };
+    const payload: ITokenContent = {
+      sub: user.id,
+      email: user.email,
+      username: user.username,
+    };
     return {
       access_token: this.jwtService.sign(payload),
     };

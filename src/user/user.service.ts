@@ -26,16 +26,18 @@ export class UserService {
   }
 
   async validateCredentials({
-    email,
+    userName,
     password,
   }: {
-    email: string;
+    userName: string;
     password: string;
   }): Promise<User | undefined> {
-    const user = await this.usersRepository.findOne({
-      where: { email },
-      select: ['password', 'id', 'email'],
+    const userByUserName = await this.usersRepository.findOne({
+      where: { username: userName },
+      select: ['password', 'id', 'email', 'username'],
     });
+
+    const user = userByUserName;
 
     if (!user) {
       throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
@@ -51,9 +53,18 @@ export class UserService {
   }
 
   async create(userDto: CreateUserDto): Promise<User> {
-    const userInDB = await this.findOneByEmail(userDto.email);
+    const userByEmail = await this.usersRepository.findOne({
+      where: { email: userDto.email },
+    });
+    const userByUsername = await this.usersRepository.findOne({
+      where: { username: userDto.username },
+    });
+    const userInDB = userByEmail || userByUsername;
     if (userInDB) {
-      throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'An user with the same email or username has already existed',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     let user = this.usersRepository.create({
