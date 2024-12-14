@@ -12,6 +12,7 @@ import {
   Relation,
 } from 'typeorm';
 import { Auction } from '../auction/auction.entity';
+import { PersonalizeSave } from '../personalize-save/personalize-save.entity';
 
 @Entity({ name: 'auctionLot' })
 export class AuctionLot {
@@ -70,6 +71,12 @@ export class AuctionLot {
 
   @OneToMany(() => Bid, (bid) => bid.auctionLot)
   bids: Relation<Bid[]>;
+
+  @OneToMany(
+    () => PersonalizeSave,
+    (personalizeSave) => personalizeSave.auctionLot,
+  )
+  personalizeSaves: Relation<PersonalizeSave[]>;
 
   @BeforeInsert()
   setCreatedAt() {

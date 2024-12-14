@@ -105,7 +105,7 @@ export class AuctionService {
   async findById(id: string): Promise<Auction> {
     return this.auctionRepository.findOne({
       where: { id },
-      relations: ['creator', 'auctionLots'],
+      relations: ['creator', 'auctionLots', 'auctionLots.bids'],
     });
   }
 }

@@ -94,4 +94,21 @@ export class UserService {
   findOne(id: string): Promise<User | null> {
     return this.usersRepository.findOneBy({ id });
   }
+
+  async deregister(user: User): Promise<{ isSuccess: boolean }> {
+    try {
+      user.isDeregistered = true;
+      await this.usersRepository.save(user);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return { isSuccess: true };
+  }
 }

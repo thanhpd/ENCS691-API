@@ -129,6 +129,15 @@ export class AuctionLotService {
     });
   }
 
+  async getAuctionLotsByUserId(userId: string): Promise<AuctionLot[]> {
+    return this.auctionLotRepository.find({
+      where: { creator: { id: userId } },
+      order: {
+        startAt: 'asc',
+      },
+    });
+  }
+
   async findById(id: string): Promise<AuctionLot> {
     return this.auctionLotRepository.findOne({
       where: { id },

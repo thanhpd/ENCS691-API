@@ -9,6 +9,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { Auction } from '../auction/auction.entity';
 import { Bid } from '../bid/bid.entity';
+import { PersonalizeSave } from '../personalize-save/personalize-save.entity';
 
 @Entity({ name: 'user' })
 export class User {
@@ -44,6 +45,12 @@ export class User {
 
   @OneToMany(() => Bid, (bid) => bid.bidder)
   bids: Relation<Bid[]>;
+
+  @OneToMany(() => PersonalizeSave, (personalizeSave) => personalizeSave.user)
+  personalizeSaves: Relation<PersonalizeSave[]>;
+
+  @Column({ nullable: true })
+  isDeregistered: boolean;
 
   @BeforeInsert()
   async hashPassword() {

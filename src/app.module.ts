@@ -10,6 +10,7 @@ import { AuctionModule } from './auction/auction.module';
 import { AuctionLotModule } from './auction-lot/auction-lot.module';
 import { BidModule } from './bid/bid.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { PersonalizeSaveModule } from './personalize-save/personalize-save.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     AuctionModule,
     AuctionLotModule,
     BidModule,
+    PersonalizeSaveModule,
   ],
   controllers: [],
   providers: [],
