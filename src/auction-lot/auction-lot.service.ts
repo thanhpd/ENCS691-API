@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { addMinutes, startOfMinute } from 'date-fns';
+import { addMinutes, isBefore, startOfMinute } from 'date-fns';
 import { AuctionLot } from 'src/auction-lot/auction-lot.entity';
 import { CreateAuctionLotDto } from 'src/auction-lot/dto/create-auction-lot.dto';
 import { Auction } from 'src/auction/auction.entity';
@@ -69,6 +69,21 @@ export class AuctionLotService {
     }
 
     const isStartNow = auctionLot.isStartNow == 'true';
+
+    if (
+      !isStartNow &&
+      auction.startAt &&
+      isBefore(new Date(auction.startAt), new Date())
+    ) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Auction lot start date must be in the future',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const startAt = startOfMinute(
       isStartNow ? new Date() : new Date(auctionLot.startAt),
     );

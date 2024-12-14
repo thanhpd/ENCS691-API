@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { startOfMinute } from 'date-fns';
+import { isBefore, startOfMinute } from 'date-fns';
 import { Auction } from 'src/auction/auction.entity';
 import { CreateAuctionDto } from 'src/auction/dto/create-auction.dto';
 import { MediaService } from 'src/common/media/media.service';
@@ -34,12 +34,30 @@ export class AuctionService {
 
     const isActive = auction.isActive === 'true';
 
+    if (
+      !isActive &&
+      auction.startAt &&
+      isBefore(new Date(auction.startAt), new Date())
+    ) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Auction start date must be in the future',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const startAt = startOfMinute(
+      isActive ? new Date() : new Date(auction.startAt),
+    );
+
     const newAuction = this.auctionRepository.create({
       name: auction.name,
       details: auction.details,
       type: auction.type,
       status: isActive ? 'active' : 'pending',
-      startAt: startOfMinute(isActive ? new Date() : new Date(auction.startAt)),
+      startAt,
       createdAt: new Date(),
       creator: user,
     });
@@ -70,6 +88,17 @@ export class AuctionService {
         startAt: 'asc',
       },
       relations: ['creator'],
+    });
+  }
+
+  async listUpcomingPreviews(): Promise<Auction[]> {
+    return this.auctionRepository.find({
+      where: [{ status: 'pending' }],
+      order: {
+        startAt: 'asc',
+      },
+      relations: ['creator'],
+      take: 5,
     });
   }
 

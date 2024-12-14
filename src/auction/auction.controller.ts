@@ -52,14 +52,14 @@ export class AuctionController {
 
   @Public()
   @Get()
-  async listAll() {
-    return this.auctionService.listAll();
+  async listAllActiveAndPending() {
+    return this.auctionService.listAllActiveAndPending();
   }
 
   @Public()
   @Get('/upcoming')
   async listAllUpcoming() {
-    return this.auctionService.listAllActiveAndPending();
+    return this.auctionService.listUpcomingPreviews();
   }
 
   @Public()
