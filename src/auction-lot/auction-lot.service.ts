@@ -73,7 +73,7 @@ export class AuctionLotService {
     if (
       !isStartNow &&
       auction.startAt &&
-      isBefore(new Date(auction.startAt), new Date())
+      isBefore(new Date(auctionLot.startAt), new Date())
     ) {
       throw new HttpException(
         {
