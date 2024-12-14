@@ -11,6 +11,7 @@ import { Socket } from 'socket.io';
 import { WsException } from '@nestjs/websockets';
 import { JwtService } from '@nestjs/jwt';
 import { ITokenContent } from 'src/auth/token-content.interface';
+import { PersonalizeSave } from 'src/personalize-save/personalize-save.entity';
 
 @Injectable()
 export class AuctionLotService {
@@ -21,6 +22,8 @@ export class AuctionLotService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Auction)
     private readonly auctionRepository: Repository<Auction>,
+    @InjectRepository(PersonalizeSave)
+    private readonly personalizeSaveRepository: Repository<PersonalizeSave>,
     private readonly mediaService: MediaService,
     private readonly jwtService: JwtService,
   ) {}
@@ -119,14 +122,30 @@ export class AuctionLotService {
     return newAuctionLot;
   }
 
-  async listAllByAuctionId(auctionId: string): Promise<AuctionLot[]> {
-    return this.auctionLotRepository.find({
+  async listAllByAuctionId(
+    auctionId: string,
+    userId?: string,
+  ): Promise<AuctionLot[]> {
+    const lots = await this.auctionLotRepository.find({
       where: { auction: { id: auctionId } },
       order: {
         startAt: 'asc',
       },
       relations: ['bids'],
     });
+
+    if (userId) {
+      const savedItems = await this.personalizeSaveRepository.find({
+        where: { user: { id: userId } },
+        relations: ['auctionLot'],
+      });
+
+      lots.forEach((lot) => {
+        lot.isSaved = savedItems.some((item) => item.auctionLot.id === lot.id);
+      });
+    }
+
+    return lots;
   }
 
   async getAuctionLotsByUserId(userId: string): Promise<AuctionLot[]> {

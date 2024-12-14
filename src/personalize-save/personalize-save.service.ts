@@ -60,4 +60,11 @@ export class PersonalizeSaveService {
       user: { id: userId },
     });
   }
+
+  async getSavedItems(userId: string) {
+    return await this.personalizeSaveRepository.find({
+      where: { user: { id: userId } },
+      relations: ['auctionLot', 'auctionLot.bids'],
+    });
+  }
 }

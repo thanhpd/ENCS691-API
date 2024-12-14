@@ -6,6 +6,7 @@ import {
   UnauthorizedException,
   HttpException,
   HttpStatus,
+  Post,
 } from '@nestjs/common';
 import { AuctionLotService } from 'src/auction-lot/auction-lot.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -48,7 +49,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('deregister')
+  @Post('deregister')
   async deregister(@Request() req: any) {
     if (!req.user) {
       throw new UnauthorizedException();
@@ -78,7 +79,7 @@ export class UsersController {
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
-          error: `You cannot deregister because you have active ${auctionLots.length} auction lots and ${bids.length} bids`,
+          error: `You cannot deregister because you posted ${auctionLots.length} auction lots and ${bids.length} bids`,
         },
         HttpStatus.BAD_REQUEST,
       );

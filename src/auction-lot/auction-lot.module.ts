@@ -10,10 +10,11 @@ import { AuctionLotGateway } from './auction-lot.gateway';
 import { AuctionLotScheduler } from 'src/auction-lot/auction-lot.scheduler';
 import { JwtModule } from '@nestjs/jwt';
 import jwtConfig from 'src/auth/config/jwt.config';
+import { PersonalizeSave } from 'src/personalize-save/personalize-save.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([AuctionLot, Auction, User]),
+    TypeOrmModule.forFeature([AuctionLot, Auction, User, PersonalizeSave]),
     MediaModule,
     JwtModule.registerAsync(jwtConfig.asProvider()),
   ],
