@@ -106,15 +106,14 @@ export class AuctionController {
   }
 
   @Public()
-  @Get(':auctionId/lot/:lotId')
+  @Get('/lot/:lotId')
   async getLot(@Param('lotId') lotId: string) {
     return this.auctionLotService.findById(lotId);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post(':auctionId/lot/:lotId/bid')
+  @Post('/lot/:lotId/bid')
   async createBid(
-    @Param('auctionId') auctionId: string,
     @Param('lotId') lotId: string,
     @Body() body: CreateBidDto,
     @Request() req: any,

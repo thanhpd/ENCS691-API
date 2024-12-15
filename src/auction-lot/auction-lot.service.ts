@@ -154,6 +154,7 @@ export class AuctionLotService {
       order: {
         startAt: 'asc',
       },
+      relations: ['auction'],
     });
   }
 
