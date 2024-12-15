@@ -72,11 +72,12 @@ export class AuctionLotService {
     }
 
     const isStartNow = auctionLot.isStartNow == 'true';
+    const startNowTimestamp = auction.startAt;
 
     if (
       !isStartNow &&
       auction.startAt &&
-      isBefore(new Date(auctionLot.startAt), new Date())
+      isBefore(new Date(auctionLot.startAt), new Date(startNowTimestamp))
     ) {
       throw new HttpException(
         {
@@ -88,7 +89,7 @@ export class AuctionLotService {
     }
 
     const startAt = startOfMinute(
-      isStartNow ? new Date() : new Date(auctionLot.startAt),
+      isStartNow ? new Date(startNowTimestamp) : new Date(auctionLot.startAt),
     );
 
     let newAuctionLot = await this.auctionLotRepository.create({

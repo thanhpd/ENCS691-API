@@ -1,10 +1,4 @@
-import {
-  IsBooleanString,
-  IsDateString,
-  IsEnum,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsBooleanString, IsEnum, IsOptional, IsString } from 'class-validator';
 import { AuctionType } from 'src/auction/enums/auction-type.enum';
 import { IsImage } from 'src/common/decorators/validators/is-image.decorator';
 
@@ -16,7 +10,8 @@ export class CreateAuctionDto {
   @IsImage()
   thumbnailImg?: Express.Multer.File;
 
-  @IsDateString()
+  @IsOptional()
+  @IsString()
   startAt: string;
 
   @IsOptional()

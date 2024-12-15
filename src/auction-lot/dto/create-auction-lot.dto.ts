@@ -1,7 +1,6 @@
 import {
   IsArray,
   IsBooleanString,
-  IsDateString,
   IsNumberString,
   IsOptional,
   IsString,
@@ -38,7 +37,7 @@ export class CreateAuctionLotDto {
   isStartNow: string;
 
   @IsOptional()
-  @IsDateString()
+  @IsString()
   startAt?: string;
 
   @IsNumberString()

@@ -18,6 +18,10 @@ export function IsImage(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         async validate(value: any) {
+          if (!value) {
+            return true;
+          }
+
           const mimetype = value?.mimetype || (await value)?.mimetype;
           return ALLOWED_IMAGE_TYPES.includes(mimetype);
         },
