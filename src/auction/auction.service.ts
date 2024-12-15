@@ -108,4 +108,14 @@ export class AuctionService {
       relations: ['creator'],
     });
   }
+
+  async getAuctionsByUserId(userId: string): Promise<Auction[]> {
+    return this.auctionRepository.find({
+      where: { creator: { id: userId } },
+      order: {
+        startAt: 'asc',
+      },
+      relations: ['creator'],
+    });
+  }
 }

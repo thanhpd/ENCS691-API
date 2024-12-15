@@ -62,6 +62,14 @@ export class AuctionController {
     return this.auctionService.listUpcomingPreviews();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('/manage')
+  async listAllForUser(@Request() req: any) {
+    const { userId } = req.user;
+
+    return this.auctionService.getAuctionsByUserId(userId);
+  }
+
   @Public()
   @Get(':auctionId')
   async getOne(@Param('auctionId') auctionId: string) {
