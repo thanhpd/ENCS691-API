@@ -79,6 +79,7 @@ export class AuctionLot {
   personalizeSaves: Relation<PersonalizeSave[]>;
 
   isSaved?: boolean;
+  isSelf?: boolean;
 
   @BeforeInsert()
   setCreatedAt() {

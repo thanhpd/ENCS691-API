@@ -13,11 +13,20 @@ import { Server } from 'socket.io';
 import { AuctionLotService } from 'src/auction-lot/auction-lot.service';
 import { Socket } from 'socket.io';
 import { OnEvent } from '@nestjs/event-emitter';
-import { MessageEvent } from 'src/bid/enums/message-event.enum';
+import { MessageEvent as BidMessageEvent } from 'src/bid/enums/message-event.enum';
+import { MessageEvent as AuctionMessageEvent } from 'src/auction/enums/message-event.enum';
+import { MessageEvent as AuctionLotMessageEvent } from 'src/auction-lot/enums/message-event.enum';
 import { Bid } from 'src/bid/bid.entity';
 
 @WebSocketGateway({
   namespace: 'lot',
+  cors: {
+    origin: [
+      /localhost:([0-9])+/,
+      ...(process.env.CORS_ALLOWANCE || '').split(','),
+    ],
+    methods: ['GET', 'POST'],
+  },
 })
 export class AuctionLotGateway
   implements OnGatewayConnection, OnGatewayDisconnect
@@ -27,8 +36,9 @@ export class AuctionLotGateway
 
   constructor(private auctionLotService: AuctionLotService) {}
 
-  async handleConnection(client: Socket) {
-    this.auctionLotService.getUserFromSocket(client);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async handleConnection(_client: Socket) {
+    // this.auctionLotService.getUserFromSocket(client);
   }
 
   async handleDisconnect() {
@@ -44,8 +54,23 @@ export class AuctionLotGateway
   //   return this.sendMessageAction.execute(client, data);
   // }
 
-  @OnEvent(MessageEvent.OnNewBidCreated)
+  @OnEvent(BidMessageEvent.OnNewBidCreated)
   async onNewBidCreated(event: Bid) {
-    this.server.to(event.auctionLot.id).emit('onNewBidCreated', event);
+    this.server.emit('onNewBidCreated', event);
+  }
+
+  @OnEvent(AuctionMessageEvent.OnScheduledAuctionBecomesActive)
+  async onScheduledAuctionBecomesActive(event: boolean) {
+    this.server.emit('onScheduledAuctionBecomesActive', event);
+  }
+
+  @OnEvent(AuctionLotMessageEvent.OnAuctionLotEnds)
+  async onAuctionLotCreated(event: boolean) {
+    this.server.emit('onAuctionLotEnds', event);
+  }
+
+  @OnEvent(AuctionLotMessageEvent.OnAuctionLotExtended)
+  async onAuctionLotUpdated(event: boolean) {
+    this.server.emit('onAuctionLotExtended', event);
   }
 }

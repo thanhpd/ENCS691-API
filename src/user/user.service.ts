@@ -34,7 +34,7 @@ export class UserService {
   }): Promise<User | undefined> {
     const userByUserName = await this.usersRepository.findOne({
       where: { username: userName },
-      select: ['password', 'id', 'email', 'username'],
+      select: ['password', 'id', 'email', 'username', 'isDeregistered'],
     });
 
     const user = userByUserName;
@@ -47,6 +47,13 @@ export class UserService {
 
     if (!areEqual) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+    }
+
+    if (user.isDeregistered) {
+      throw new HttpException(
+        'User has been deregistered',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     return user;

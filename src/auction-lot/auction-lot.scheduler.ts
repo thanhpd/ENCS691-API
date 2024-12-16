@@ -37,6 +37,7 @@ export class AuctionLotScheduler {
       // Find all auction lots that have isAutoExtendAfterTimerEnds set to true and extend the endAt by intervalInMinutes
       const results = await this.auctionLotRepository
         .createQueryBuilder('auctionLot')
+        .leftJoinAndSelect('auctionLot.bids', 'bids')
         .where(`auctionLot.endAt <= :now`, { now: new Date() })
         .andWhere(
           `auctionLot.isAutoExtendAfterTimerEnds = :isAutoExtendAfterTimerEnds`,
@@ -48,15 +49,22 @@ export class AuctionLotScheduler {
         .getMany();
 
       for (const result of results) {
-        await this.auctionLotRepository
-          .createQueryBuilder('auctionLot')
-          .update(AuctionLot)
-          .set({
-            endAt: addMinutes(result.endAt, result.intervalInMinutes),
-            updatedAt: new Date(),
-          })
-          .where(`id = :id`, { id: result.id })
-          .execute();
+        if (result.bids.length) {
+          // Has bid, set status to ended
+          result.status = 'ended';
+          await this.auctionLotRepository.save(result);
+        } else {
+          // No bid, extend the end time
+          await this.auctionLotRepository
+            .createQueryBuilder('auctionLot')
+            .update(AuctionLot)
+            .set({
+              endAt: addMinutes(result.endAt, result.intervalInMinutes),
+              updatedAt: new Date(),
+            })
+            .where(`id = :id`, { id: result.id })
+            .execute();
+        }
       }
       this.logger.log('Updated auction lots end time');
     } catch (error) {

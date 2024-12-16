@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { addMinutes, isBefore, startOfMinute } from 'date-fns';
+import { addMinutes, endOfMinute, isBefore } from 'date-fns';
 import { AuctionLot } from 'src/auction-lot/auction-lot.entity';
 import { CreateAuctionLotDto } from 'src/auction-lot/dto/create-auction-lot.dto';
 import { Auction } from 'src/auction/auction.entity';
@@ -88,8 +88,8 @@ export class AuctionLotService {
       );
     }
 
-    const startAt = startOfMinute(
-      isStartNow ? new Date(startNowTimestamp) : new Date(auctionLot.startAt),
+    const startAt = endOfMinute(
+      isStartNow ? new Date() : new Date(auction.startAt),
     );
 
     let newAuctionLot = await this.auctionLotRepository.create({
@@ -162,7 +162,7 @@ export class AuctionLotService {
   async findById(id: string): Promise<AuctionLot> {
     return this.auctionLotRepository.findOne({
       where: { id },
-      relations: ['creator', 'auction', 'bids'],
+      relations: ['creator', 'auction', 'bids', 'bids.bidder'],
     });
   }
 
