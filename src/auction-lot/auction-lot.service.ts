@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { addMinutes, endOfMinute, isBefore } from 'date-fns';
+import { addMinutes, isBefore, startOfMinute } from 'date-fns';
 import { AuctionLot } from 'src/auction-lot/auction-lot.entity';
 import { CreateAuctionLotDto } from 'src/auction-lot/dto/create-auction-lot.dto';
 import { Auction } from 'src/auction/auction.entity';
@@ -88,7 +88,7 @@ export class AuctionLotService {
       );
     }
 
-    const startAt = endOfMinute(
+    const startAt = startOfMinute(
       isStartNow ? new Date() : new Date(auction.startAt),
     );
 
@@ -165,6 +165,31 @@ export class AuctionLotService {
       relations: ['creator', 'auction', 'bids', 'bids.bidder'],
     });
   }
+
+  // async checkAndCloseLot(auctionLotId: string) {
+  //   const auctionLot = await this.auctionLotRepository.findOne({
+  //     where: { id: auctionLotId },
+  //     relations: ['bids'],
+  //   });
+
+  //   if (!auctionLot) {
+  //     return;
+  //   }
+
+  //   if (auctionLot.status === 'active') {
+  //     if (isBefore(new Date(), new Date(auctionLot.endAt))) {
+  //       return;
+  //     }
+
+  //     if (auctionLot.bids.length > 0) {
+  //       auctionLot.status = 'sold';
+  //     } else {
+  //       auctionLot.status = 'not_sold';
+  //     }
+
+  //     await this.auctionLotRepository.save(auctionLot);
+  //   }
+  // }
 
   async getUserFromSocket(socket: Socket) {
     try {
