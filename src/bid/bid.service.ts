@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
-import { addMinutes } from 'date-fns';
+import { addMinutes, startOfSecond } from 'date-fns';
 import { AuctionLot } from 'src/auction-lot/auction-lot.entity';
 import { Bid } from 'src/bid/bid.entity';
 import { CreateBidDto } from 'src/bid/dto/create-bid.dto';
@@ -58,11 +58,12 @@ export class BidService {
       where: { auctionLot: { id: auctionLotId }, isHighestBid: true },
     });
 
-    if (highestBid && bid.amount <= highestBid.amount) {
+    if (highestBid && bid.amount < highestBid.amount) {
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
-          error: 'Bid amount must be higher than the current highest bid',
+          error:
+            'Bid amount must be equal or higher than the current highest bid',
         },
         HttpStatus.BAD_REQUEST,
       );
@@ -72,7 +73,8 @@ export class BidService {
 
     await this.bidRepository.manager.transaction(
       async (transactionalEntityManager) => {
-        if (highestBid) {
+        const isEqualHighestBid = highestBid?.amount === bid.amount;
+        if (highestBid && bid.amount > highestBid.amount) {
           highestBid.isHighestBid = false;
           await transactionalEntityManager.save(highestBid);
         }
@@ -82,14 +84,13 @@ export class BidService {
           createdAt: new Date(),
           bidder: user,
           auctionLot,
-          isHighestBid: true,
+          isHighestBid: !isEqualHighestBid,
         });
 
         returningBid = await transactionalEntityManager.save(newBid);
 
-        auctionLot.endAt = addMinutes(
-          new Date(),
-          Number(auctionLot.intervalInMinutes) || 5,
+        auctionLot.endAt = startOfSecond(
+          addMinutes(new Date(), Number(auctionLot.intervalInMinutes) || 5),
         );
         await transactionalEntityManager.save(auctionLot);
       },

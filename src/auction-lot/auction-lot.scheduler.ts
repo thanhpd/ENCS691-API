@@ -1,8 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
-import { addMinutes } from 'date-fns';
+import { addMinutes, addSeconds, startOfSecond } from 'date-fns';
 import { AuctionLot } from 'src/auction-lot/auction-lot.entity';
+import { Auction } from 'src/auction/auction.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -12,6 +13,8 @@ export class AuctionLotScheduler {
   constructor(
     @InjectRepository(AuctionLot)
     private readonly auctionLotRepository: Repository<AuctionLot>,
+    @InjectRepository(Auction)
+    private readonly auctionRepository: Repository<Auction>,
   ) {}
 
   @Cron(CronExpression.EVERY_MINUTE)
@@ -53,13 +56,25 @@ export class AuctionLotScheduler {
           // Has bid, set status to ended
           result.status = 'ended';
           await this.auctionLotRepository.save(result);
+
+          // If the associated auction has all lots with 'ended' status, set the auction status to 'ended'
+          // const auction = await this.auctionRepository.findOne({
+          //   where: { id: result.auction.id },
+          //   relations: ['lots'],
+          // });
+          // if (auction?.auctionLots?.every((lot) => lot.status === 'ended')) {
+          //   auction.status = 'ended';
+          //   await this.auctionRepository.save(auction);
+          // }
         } else {
           // No bid, extend the end time
           await this.auctionLotRepository
             .createQueryBuilder('auctionLot')
             .update(AuctionLot)
             .set({
-              endAt: addMinutes(result.endAt, result.intervalInMinutes),
+              endAt: startOfSecond(
+                addMinutes(result.endAt, result.intervalInMinutes),
+              ),
               updatedAt: new Date(),
             })
             .where(`id = :id`, { id: result.id })
@@ -89,7 +104,7 @@ export class AuctionLotScheduler {
         .update(AuctionLot)
         .set({ status: 'ended', updatedAt: new Date() })
         .where(`isAutoExtendAfterTimerEnds != true`)
-        .andWhere(`endAt <= :now`, { now: new Date() })
+        .andWhere(`endAt <= :now`, { now: addSeconds(new Date(), 1) })
         .andWhere(`status != :status`, { status: 'ended' })
         .execute();
       this.logger.log('Updated auction lots status to ended');
